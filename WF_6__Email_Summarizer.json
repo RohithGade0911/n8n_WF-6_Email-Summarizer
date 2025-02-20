@@ -1,0 +1,574 @@
+{
+  "name": "WF-6: Email Summarizer",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -680,
+        -240
+      ],
+      "id": "5880f5ec-186b-408b-a836-df8a5dfa8d57",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1CRovldWWiSb0Zxh",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "High Priority",
+              "description": "Emails in this category require immediate attention or action, such as urgent work-related messages, deadline-sensitive tasks, or critical security alerts, often sent by executives, team leads, or automated system notifications.\n\nKeywords: Urgent, Action Required, Immediate Attention, Critical, Important, Security Alert, Deadline, Approval Needed, Follow-up, Reminder."
+            },
+            {
+              "category": "Personal",
+              "description": "This category includes emails related to personal matters, family, or friends, characterized by an informal tone and conversational language, typically containing greetings, casual discussions, or invitations.\n\nKeywords: Hey, Hello, How are you, Catch up, Dinner plans, Invitation, Birthday, Wedding, Vacation, Meet up, Just checking in, Congrats, Love, Regards"
+            },
+            {
+              "category": "Promotional",
+              "description": "Emails in the promotional category are marketing and advertisement messages from brands or e-commerce platforms, often promoting discounts, product launches, or exclusive deals, commonly featuring sales-oriented keywords.\n\nKeywords: Sale, Discount, Offer, Exclusive, Limited Time, Flash Sale, Coupon, Subscribe & Save, Buy Now, Free Shipping, Giveaway, New Arrival, Special Deal."
+            },
+            {
+              "category": "Customer Support",
+              "description": "Emails categorized as customer support originate from service providers or help desks, containing queries, responses, troubleshooting steps, or issue resolutions, often mentioning support tickets, account issues, or order statuses.\n\nKeywords: Support Ticket, Help Request, Assistance, Account Issue, Technical Support, Order Status, Refund Inquiry, Service Request, Troubleshoot, Contact Us, Reset Password, Customer Service"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        -180
+      ],
+      "id": "28c9bca0-a467-4d26-be97-e2facb9981cd",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -620,
+        60
+      ],
+      "id": "6c7d4198-0364-4369-8c88-7726397107ad",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Wpz92gS5tHENlMa7",
+          "name": "OpenAi for N8N - 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5922369001",
+        "text": "=High priority email from: {{ $('Gmail Trigger').item.json.from.value[0].name }}\n\nSummary: {{ $json.message.content }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        780,
+        -500
+      ],
+      "id": "f66dd7a4-c74f-4588-a9ba-8fe88fea6beb",
+      "name": "Telegram",
+      "webhookId": "82c3fcb4-f140-45d9-ba12-64601bc066d5",
+      "credentials": {
+        "telegramApi": {
+          "id": "vN1e7JJVz0eOaAK1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5922369001",
+        "text": "=Personal email from: {{ $('Gmail Trigger').item.json.from.value[0].name }}\n\nSummary: {{ $json.message.content }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1000,
+        -320
+      ],
+      "id": "5c32b05a-d941-4952-b08a-ed80b8aa3715",
+      "name": "Telegram1",
+      "webhookId": "82c3fcb4-f140-45d9-ba12-64601bc066d5",
+      "credentials": {
+        "telegramApi": {
+          "id": "vN1e7JJVz0eOaAK1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5922369001",
+        "text": "=Promotional email from: {{ $('Gmail Trigger').item.json.from.value[0].name }}\n\nSummary: {{ $json.message.content }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        -100
+      ],
+      "id": "86e22b64-ea44-4cfb-9e10-c80614795b84",
+      "name": "Telegram2",
+      "webhookId": "82c3fcb4-f140-45d9-ba12-64601bc066d5",
+      "credentials": {
+        "telegramApi": {
+          "id": "vN1e7JJVz0eOaAK1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5922369001",
+        "text": "=Customer Support email from: {{ $('Gmail Trigger').item.json.from.value[0].name }}\n\nSummary: {{ $json.message.content }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        80
+      ],
+      "id": "ce861a8f-9036-4bce-8395-aefcb9dd71a4",
+      "name": "Telegram3",
+      "webhookId": "82c3fcb4-f140-45d9-ba12-64601bc066d5",
+      "credentials": {
+        "telegramApi": {
+          "id": "vN1e7JJVz0eOaAK1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_3581302529416925952"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        -500
+      ],
+      "id": "b4464377-7958-4b23-8e06-4f4f007796a9",
+      "name": "High Priority",
+      "webhookId": "6bc03543-af84-4829-9a55-736683daf639",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1CRovldWWiSb0Zxh",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_7202410217924351776"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        -320
+      ],
+      "id": "f0e31086-ea9e-4f34-bd46-6cbe36b9b493",
+      "name": "Personal",
+      "webhookId": "6bc03543-af84-4829-9a55-736683daf639",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1CRovldWWiSb0Zxh",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_8582814001431766100"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        -120
+      ],
+      "id": "6507f3f1-d36d-4257-9427-a4341e3221f4",
+      "name": "Promotional",
+      "webhookId": "6bc03543-af84-4829-9a55-736683daf639",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1CRovldWWiSb0Zxh",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_2287238214492612957"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        80
+      ],
+      "id": "292a162c-9553-4767-aae4-f410aa504e5a",
+      "name": "Customer Support",
+      "webhookId": "6bc03543-af84-4829-9a55-736683daf639",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1CRovldWWiSb0Zxh",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are in charge of high priority mails. Please evaluate the incoming high priority email and give us a quick summary.\n\nHere is the incoming high priority email message:  {{ $('Gmail Trigger').item.json.text }}\n\nPlease output the following separately:\nSummary\nSender Name:{{ $('Gmail Trigger').item.json.headers.from }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        420,
+        -420
+      ],
+      "id": "43752fbc-d696-4a5c-bc19-1fe0caf106db",
+      "name": "High priority Summarizer",
+      "credentials": {
+        "openAiApi": {
+          "id": "Wpz92gS5tHENlMa7",
+          "name": "OpenAi for N8N - 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are in charge of personal mails. Please evaluate the incoming personal email and give us a quick summary.\n\nHere is the incoming personal email message:  {{ $('Gmail Trigger').item.json.text }}\n\nPlease output the following separately:\nSummary\nSender Name:{{ $('Gmail Trigger').item.json.headers.from }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        440,
+        -220
+      ],
+      "id": "5c15368b-60a3-4df3-9239-19b9ec1cbd50",
+      "name": "Personal Summarizer",
+      "credentials": {
+        "openAiApi": {
+          "id": "Wpz92gS5tHENlMa7",
+          "name": "OpenAi for N8N - 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are in charge of Promotional mails. Please evaluate the incoming promotional email and give us a quick summary.\n\nHere is the incoming promotional email message:  {{ $('Gmail Trigger').item.json.text }}\n\nPlease output the following separately:\nSummary\nSender Name:{{ $('Gmail Trigger').item.json.headers.from }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        440,
+        -20
+      ],
+      "id": "6225722b-8a6b-481e-a4db-a8ecc124f334",
+      "name": "Promotional Summarizer",
+      "credentials": {
+        "openAiApi": {
+          "id": "Wpz92gS5tHENlMa7",
+          "name": "OpenAi for N8N - 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are in charge of customer support mails. Please evaluate the incoming customer support email and give us a quick summary.\n\nHere is the incoming customer support email message:  {{ $('Gmail Trigger').item.json.text }}\n\nPlease output the following separately:\nSummary\nSender Name:{{ $('Gmail Trigger').item.json.headers.from }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        440,
+        180
+      ],
+      "id": "be16f67a-ec0c-41ae-a9f4-caa0f01b9362",
+      "name": "Customer Support Summarizer",
+      "credentials": {
+        "openAiApi": {
+          "id": "Wpz92gS5tHENlMa7",
+          "name": "OpenAi for N8N - 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## WF-6: Email Summarizer",
+        "height": 100,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        100,
+        -680
+      ],
+      "typeVersion": 1,
+      "id": "98280dcc-f0e3-4d35-88ba-a73f2c0792ee",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "High Priority",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Personal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Promotional",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Customer Support",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Priority": {
+      "main": [
+        [
+          {
+            "node": "High priority Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personal": {
+      "main": [
+        [
+          {
+            "node": "Personal Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Promotional": {
+      "main": [
+        [
+          {
+            "node": "Promotional Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer Support": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High priority Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personal Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Promotional Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Telegram2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer Support Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Telegram3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d8c12674-68a3-4081-b246-ab606e15b9f2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2d2d70a2fb453af06e00a928d8941f9b9244bb70831be608328c9e9fa7d1bda3"
+  },
+  "id": "8X4YEf2mmgcKd37G",
+  "tags": []
+}
